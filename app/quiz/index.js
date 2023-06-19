@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {View,Text,SafeAreaView,TouchableOpacity,StyleSheet,Image, Dimensions,Animated,TextInput} from 'react-native'
+import {View,Text,SafeAreaView,TouchableOpacity,StyleSheet,Image, Dimensions,Animated,TextInput, useColorScheme} from 'react-native'
 import decode from 'html-entities-decoder'
 import { StatusBar } from 'expo-status-bar'
 import Option from '../../components/Option'
@@ -24,10 +24,12 @@ export default function Quiz() {
   const [LeaderboardList,setLeaderboardList] = useState([]);
   const [Time,setTime] = useState(60);
   const [IsTimerPaused,setIsTimerPaused] = useState(false);
-  const [IsDark,setIsDark] = useState(false);
   const router = useRouter();
   const navigation = useNavigation();
-  const COLORS = COLORS_SCHEME[0]
+  const colorScheme = useColorScheme()
+  const [IsDark,setIsDark] = useState(colorScheme!=='light') //change // change
+  const COLORS = COLORS_SCHEME[(IsDark)?1:0]
+ // console.log(cS)
   // Fetch Question Array from API
   /*
   Response From API
@@ -40,7 +42,7 @@ export default function Quiz() {
       "correct_answer":"The Goth Family",
       "incorrect_answers":["The Family","The Simoleon Family","The Proud Family"
     ]}
-}
+  }
   */
   const FetchQuestion  = async ()=>{
     const uri ='https://opentdb.com/api.php?amount=5&category=9&type=multiple'
@@ -84,6 +86,9 @@ export default function Quiz() {
   useEffect(()=>{
     FetchQuestion()
   },[])
+  useEffect(()=>{
+    setIsDark(colorScheme!=='light')
+  },[colorScheme])
   useEffect(()=>{
     if(questions.length >0)
       setCurrentAnswerIndex(questions[currentQuestion].answer)
@@ -195,7 +200,7 @@ export default function Quiz() {
     )
   }
   return (
-    <SafeAreaView style={{  width:'100%',height:'100%'}}>
+    <SafeAreaView style={{  width:'100%',height:'100%',backgroundColor:(IsDark)?'#0F0F0F':'#FAFAFF'}}>
       <StatusBar />
       {IsCompleted &&
         <View style={{
@@ -203,7 +208,6 @@ export default function Quiz() {
           flex:1,
           alignItems:'center',
           justifyContent:'center',
-          backgroundColor:COLORS.WHITE,
           paddingHorizontal:10
         }}>
           {IsNewHighScore&&
@@ -279,11 +283,11 @@ export default function Quiz() {
                 flexDirection:'column',
                 borderRadius:20
               }}>
-                <Feather name="clipboard" size={150} color={COLORS.ACTIVE_BTN} />
+                <Feather name="clipboard" size={150} color={(IsDark)?'white':COLORS.ACTIVE_BTN} />
                 <Text style={{
                   fontSize:24,
                   fontWeight:'bold',
-                  color:COLORS.ACTIVE_BTN,
+                  color:(IsDark)?'white':COLORS.ACTIVE_BTN,
                   marginTop:20
                 }}>Results Of Quiz#1</Text>
                 <View style={{
@@ -292,7 +296,7 @@ export default function Quiz() {
                   flex:1                
                 }}>
                     <View style={{
-                      backgroundColor:'#F4F3F6',
+                      backgroundColor:(IsDark)?'#171717':'#F4F3F6',
                       width:'100%',
                       alignItems:'center',
                       flexDirection:'row',
@@ -305,7 +309,7 @@ export default function Quiz() {
 
                         <View style={{ 
                             flex:2,
-                            backgroundColor:'#EDE8E3',
+                            backgroundColor:(IsDark)?'#FFFFFF':'#EDE8E3',
                             alignItems:'center',
                             justifyContent:'center',
                             borderRadius:16,
@@ -316,7 +320,7 @@ export default function Quiz() {
                             borderBottomColor:'#EDE8E3',
                             borderBottomWidth:2
                           }}>
-                          <Entypo name="star-outlined" size={16} color={COLORS.SECONDARY_COLOR} />
+                          <Entypo name="star-outlined" size={16} color={(IsDark)?'#323232':COLORS.SECONDARY_COLOR} />
                         </View>
                         <Text style={{
                           flex:9,
@@ -330,13 +334,13 @@ export default function Quiz() {
                           flex:1,
                           paddingHorizontal:15,
                           fontSize:16,
-                          fontWeight:'600',
+                          fontWeight:'500',
                           textTransform:'uppercase',
                           color:COLORS.SECONDARY_COLOR
                         }}>{score}</Text>
                     </View >
                     <View style={{
-                      backgroundColor:'#F4F3F6',
+                      backgroundColor:(IsDark)?'#171717':'#F4F3F6',
                       width:'100%',
                       alignItems:'center',
                       flexDirection:'row',
@@ -360,13 +364,13 @@ export default function Quiz() {
                             borderBottomColor:'#EDE8E3',
                             borderBottomWidth:2
                           }}>
-                          <Ionicons name="checkmark-sharp" size={16} color={COLORS.SECONDARY_COLOR} />
+                          <Ionicons name="checkmark-sharp" size={16} color={(IsDark)?'#323232':COLORS.SECONDARY_COLOR} />
                         </View>
                         <Text style={{
                           flex:9,
                           paddingHorizontal:15,
                           fontSize:16,
-                          fontWeight:'600',
+                          fontWeight:'500',
                           textTransform:'uppercase',
                           color:COLORS.SECONDARY_COLOR
                         }}>Correct Predictions</Text>
@@ -515,10 +519,10 @@ export default function Quiz() {
           flexDirection:'column',
           justifyContent:'flex-start',
           marginTop:35,
-          paddingHorizontal:10,
+          paddingHorizontal:12,
           width:'100%',
           height:'100%',
-          paddingBottom:45
+          paddingBottom:50
           }}>
             <View style={{
               flexDirection:'row',
@@ -532,7 +536,7 @@ export default function Quiz() {
                 flexDirection:'row',
                 alignItems:'center',
                 justifyContent:'space-around',
-                backgroundColor:'white',
+                backgroundColor:(IsDark)?'#171717':'white',
                 borderRadius:10,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 4 },
@@ -565,7 +569,7 @@ export default function Quiz() {
               <TouchableOpacity style={{
                 alignItems:'center',
                 justifyContent:'center',
-                backgroundColor:'#F4F3F6',
+                backgroundColor:(IsDark)?'#171717':'#F4F3F6',
                 borderRadius:Math.round(Dimensions.get('window').width + Dimensions.get('window').height)*2,
                 padding:5
               }}>
@@ -591,10 +595,10 @@ export default function Quiz() {
                   height: '100%',
                   backgroundColor: '#376996',
                   borderRadius: 10,
-                  width:Math.ceil((currentQuestion+1)*(270/5))
+                  width:Math.ceil((currentQuestion+1)*(275/5))
                 }}/>
               </View>
-              <Text style={{fontSize:12,color:'#757575',fontWeight:'500'}}>{`${currentQuestion+1}/5`}</Text>
+              <Text style={{fontSize:12,color:(IsDark)?'white':'#757575',fontWeight:'500'}}>{`${currentQuestion+1}/5`}</Text>
             </View>
             <View>
               <Text style={{
@@ -612,20 +616,19 @@ export default function Quiz() {
               </Text>
             </View>
             <View style={{
-                backgroundColor:'white',
+                backgroundColor:COLORS.TERTIARY_COLOR,
                 flexDirection:'column',
                 width:'100%',
                 alignItems:'center',
-                backgroundColor:'white',
                 borderRadius:15,
-                shadowColor: '#000',
+                shadowColor: (IsDark)?'white':'#000',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.8,
                 shadowRadius: 40,
                 elevation: 5,
                 paddingBottom:5,
                 paddingTop:20,
-                paddingHorizontal:9,
+                paddingHorizontal:12,
                 flex:1,
                 marginTop:MarginBtm
               }}>
@@ -634,7 +637,7 @@ export default function Quiz() {
               <View style={{width:'100%',flex:1}}>
                {
                 currentQuestion!=-1&&questions.length!=0&&questions[currentQuestion].options.map((option,i)=>(
-                  <Option key={i} optionText={option} optionIndex={i} OnClickListener={handleOptionClick} isSelected={SelectedOption===i}/>
+                  <Option key={i} optionText={option} optionIndex={i} OnClickListener={handleOptionClick} isSelected={SelectedOption===i} IsDark={IsDark}/>
                 ))
                }
               </View>

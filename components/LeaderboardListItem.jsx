@@ -3,7 +3,7 @@ import { Text, View } from 'react-native'
 import { COLORS_SCHEME } from '../constants'
 import { FontAwesome5 } from '@expo/vector-icons';
 const COLORS = COLORS_SCHEME[0]
-export default function LeaderboardListItem({index,name,score}) {
+export default function LeaderboardListItem({index,name,score,IsDark}) {
   const CrownColor = ()=>{
     let crownColor = ''
     switch(index){
@@ -21,7 +21,7 @@ export default function LeaderboardListItem({index,name,score}) {
   }
   return (
     <View  style={{
-        backgroundColor:'white',
+        backgroundColor:(IsDark)?'#171717':'#F4F3F6',
         width:'100%',
         alignItems:'center',
         flexDirection:'row',
@@ -35,7 +35,7 @@ export default function LeaderboardListItem({index,name,score}) {
             fontWeight:'600',
             fontSize:15,
             color:COLORS.WHITE,
-            backgroundColor:COLORS.PRIMARY_COLOR,
+            backgroundColor:(IsDark)?'#323232':COLORS.PRIMARY_COLOR,
             width:30,
             height:30,
             borderRadius:1000,
@@ -52,14 +52,14 @@ export default function LeaderboardListItem({index,name,score}) {
             <Text style={{
                 fontSize:17,
                 fontWeight:'bold',
-                color:COLORS.PRIMARY_COLOR,
+                color:(IsDark)?'#FFFFFFFF':COLORS.PRIMARY_COLOR,
                 textTransform:'uppercase'
             }}>{name}</Text>
             <Text style={{
                 fontSize:15,
                 fontWeight:'300',
                 textTransform:'uppercase',
-                color:COLORS.PRIMARY_COLOR,
+                color:(IsDark)?'#FFFFFF':COLORS.PRIMARY_COLOR,
             }}>{score}</Text>
         </View>
        {(index<4)?<FontAwesome5 name="crown" size={24} color={CrownColor()}/>:''}

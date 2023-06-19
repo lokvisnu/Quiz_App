@@ -7,11 +7,14 @@ import { COLORS_SCHEME,LEADERBOARD_STORAGE_KEY } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LeaderboardListItem from '../../components/LeaderboardListItem';
 import { Link } from 'expo-router';
+import { useColorScheme } from 'react-native';
 export default function index() {
 
     const [LeaderboardList,setLeaderboardList] = useState([]);
     const FirstDimension = 100;
-    const COLORS = COLORS_SCHEME[0]
+    const colorScheme = useColorScheme()
+    const [IsDark,setIsDark] = useState(colorScheme!=='light') //change // change
+    const COLORS = COLORS_SCHEME[(IsDark)?1:0]
 
     const getLeaderboard = async ()=>{
         const jsonValue = await AsyncStorage.getItem(LEADERBOARD_STORAGE_KEY);
@@ -21,8 +24,11 @@ export default function index() {
     useEffect(()=>{
         getLeaderboard()
     },[])
+    useEffect(()=>{
+        setIsDark(colorScheme!=='light')
+      },[colorScheme])
   return (
-    <SafeAreaView style={{flex:1,backgroundColor:'white'}}>
+    <SafeAreaView style={{flex:1,backgroundColor:(IsDark)?'#0F0F0F':'white'}}>
         <StatusBar/>
         <View style={{
             width:'100%',
@@ -52,140 +58,20 @@ export default function index() {
                      <TouchableOpacity style={{
                         alignItems:'center',
                         justifyContent:'center',
-                        backgroundColor:COLORS.WHITE,
+                        backgroundColor:(IsDark)?'#171717':COLORS.WHITE,
                         borderRadius:1000,
                         padding:5
                     }}>
                         <Link href={'/'}><Ionicons name="close" size={16} color={COLORS.SECONDARY_COLOR} /></Link>
                     </TouchableOpacity>
                 </View>
-                {/*<View style={{
-                    flexDirection:'row',
-                    justifyContent:'center',
-                    marginTop:20,
-                    gap:10,
-                    alignContent:'flex-end',
-                    alignItems:'flex-end'
-                }}>
-                    <View style={{
-                        flexDirection:'column',
-                        alignItems:'center',
-                        justifyContent:'center'
-                    }}>
-                        <View style={{
-                                backgroundColor:'lightgray',
-                                borderRadius:1000,
-                                width:FirstDimension/1.3,
-                                height:FirstDimension/1.3,
-                                justifyContent:'center',
-                                alignItems:'center',
-                                marginBottom:5
-                            }}>
-                            <Text style={{
-                                textAlign:'center',
-                                fontSize:20,
-                                fontWeight:'900',
-                            }}>2</Text>
-                        </View>
-                        <Text style={{
-                            fontWeight:'200',
-                            textAlign:'center',
-                            textTransform:'uppercase',
-                            fontSize:12
-                        }}>{LeaderboardList.length&&LeaderboardList[1].name}</Text>
-                        <Text style={{
-                            fontWeight:'400',
-                            textAlign:'center',
-                            textTransform:'uppercase',
-                            fontSize:20,
-                            backgroundColor:COLORS.SECONDARY_COLOR,
-                            paddingHorizontal:15,
-                            color:COLORS.WHITE,
-                            borderRadius:25
-                        }}>{LeaderboardList.length&&LeaderboardList[1].score}</Text>
-                    </View>
-                    <View style={{
-                        flexDirection:'column',
-                        alignItems:'center',
-                        justifyContent:'center'
-                    }}>
-                        <View style={{
-                                backgroundColor:'lightgray',
-                                borderRadius:1000,
-                                width:FirstDimension,
-                                height:FirstDimension,
-                                justifyContent:'center',
-                                alignItems:'center',
-                                marginBottom:5
-                            }}>
-                            <Text style={{
-                                textAlign:'center',
-                                fontSize:20,
-                                fontWeight:'900',
-                            }}>1</Text>
-                        </View>
-                        <Text style={{
-                            fontWeight:'200',
-                            textAlign:'center',
-                            textTransform:'uppercase',
-                            fontSize:12
-                        }}>{LeaderboardList.length&&LeaderboardList[0].name}</Text>
-                        <Text style={{
-                            fontWeight:'400',
-                            textAlign:'center',
-                            textTransform:'uppercase',
-                            fontSize:20,
-                            backgroundColor:COLORS.SECONDARY_COLOR,
-                            paddingHorizontal:15,
-                            color:COLORS.WHITE,
-                            borderRadius:25
-                        }}>{LeaderboardList.length&&LeaderboardList[0].score}</Text>
-                    </View>
-                    <View style={{
-                        flexDirection:'column',
-                        alignItems:'center',
-                        justifyContent:'center'
-                    }}>
-                        <View style={{
-                                backgroundColor:'lightgray',
-                                borderRadius:1000,
-                                width:FirstDimension/1.3,
-                                height:FirstDimension/1.3,
-                                justifyContent:'center',
-                                alignItems:'center',
-                                marginBottom:5
-                            }}>
-                            <Text style={{
-                                textAlign:'center',
-                                fontSize:20,
-                                fontWeight:'900',
-                            }}>3</Text>
-                        </View>
-                        <Text style={{
-                            fontWeight:'200',
-                            textAlign:'center',
-                            textTransform:'uppercase',
-                            fontSize:12
-                        }}>{LeaderboardList.length&&LeaderboardList[2].name}</Text>
-                        <Text style={{
-                            fontWeight:'400',
-                            textAlign:'center',
-                            textTransform:'uppercase',
-                            fontSize:20,
-                            backgroundColor:COLORS.SECONDARY_COLOR,
-                            paddingHorizontal:15,
-                            color:COLORS.WHITE,
-                            borderRadius:25
-                        }}>{LeaderboardList.length&&LeaderboardList[2].score}</Text>
-                    </View>
-                    </View>*/}
             </View>
             <ScrollView style={{
                 width:'100%',
                 paddingHorizontal:20,
                 paddingTop:10,
                 flexDirection:'column',
-                backgroundColor:COLORS.WHITE,
+                backgroundColor:COLORS.TERTIARY_COLOR,
                 borderTopLeftRadius:25,
                 borderTopRightRadius:25,
                 flex:1,
@@ -197,7 +83,7 @@ export default function index() {
             }}>
                     {LeaderboardList.length!=0&& LeaderboardList.map((item,i)=>{
                             return(
-                                <LeaderboardListItem key={i} name={item.name} score={item.score} index={i+1}/>
+                                <LeaderboardListItem key={i} name={item.name} score={item.score} index={i+1} IsDark={IsDark}/>
                             )
                         })
                     }
