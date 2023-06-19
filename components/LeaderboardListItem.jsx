@@ -2,8 +2,9 @@ import React from 'react'
 import { Text, View } from 'react-native'
 import { COLORS_SCHEME } from '../constants'
 import { FontAwesome5 } from '@expo/vector-icons';
-const COLORS = COLORS_SCHEME[0]
+
 export default function LeaderboardListItem({index,name,score,IsDark}) {
+  const COLORS = COLORS_SCHEME[(IsDark)?1:0]
   const CrownColor = ()=>{
     let crownColor = ''
     switch(index){
