@@ -3,7 +3,7 @@ import {View,Text,SafeAreaView,TouchableOpacity,StyleSheet,Image, Dimensions,Ani
 import decode from 'html-entities-decoder'
 import { StatusBar } from 'expo-status-bar'
 import Option from '../../components/Option'
-import {COLORS_SCHEME,LEADERBOARD_STORAGE_KEY } from '../../constants'
+import {COLORS_SCHEME,LEADERBOARD_STORAGE_KEY,DIFFICULTY_STORAGE_KEY } from '../../constants'
 import { ColorSpace, color } from 'react-native-reanimated'
 import { Entypo,Ionicons,Feather } from '@expo/vector-icons'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -45,9 +45,14 @@ export default function Quiz() {
   }
   */
   const FetchQuestion  = async ()=>{
-    const uri ='https://opentdb.com/api.php?amount=5&category=9&type=multiple'
+    
     try
     {
+      //Get Difficulty
+      const val = await AsyncStorage.getItem(DIFFICULTY_STORAGE_KEY)
+      const index = parseInt(val)
+      const difficulty = ['','easy','medium','hard']
+      const uri =`https://opentdb.com/api.php?amount=5&category=9&type=multiple${(index)!=0?`&difficulty=${difficulty[index]}`:''}`
       const res = await fetch(uri);
       const data = await res.json();
       let questionArray = [];
@@ -61,13 +66,15 @@ export default function Quiz() {
           });
           const answer_pos = Math.floor((Ques.options.length+1) * Math.random()); // Generating Random Pos to add the Answer in the options array
           Ques.options.splice( answer_pos, 0, ques.correct_answer) // Adds the answer to the random pos
-          Ques.answer = answer_pos // Pos of the answer in the options array
+          Ques.answer = answer_pos 
+          Ques.difficulty = ques.difficulty// Pos of the answer in the options array
           questionArray.push(Ques);
         })
         setQuestions(questionArray)
 
         setCurrentQuestion(0) // Sets the Current Question to 0 So the The CurrentQuestion UseEffect Runs to set the inital Answer Index
-      }
+      } 
+    
     }
     catch(err){
       console.log(err)
@@ -218,7 +225,7 @@ export default function Quiz() {
               justifyContent:'center',
               alignItems:'center',
               flexDirection:'column',
-              backgroundColor:COLORS.ACTIVE_BTN,
+              backgroundColor:(IsDark)?COLORS.TERTIARY_COLOR:COLORS.ACTIVE_BTN,
               borderRadius:20
             }}>
                <Text style={{
@@ -408,107 +415,6 @@ export default function Quiz() {
                               }}>Done</Text>
                       </TouchableOpacity>
                     </View>
-                {/*<Text style={{
-                  fontWeight:'bold',
-                  fontSize:45,
-                  textAlign:'center',
-                  color:COLORS.WHITE,
-                  textTransform:'uppercase'
-                }}>
-                  Well Done
-                </Text>
-                <View style={{
-                  flexDirection:'column',
-                  gap:10,
-                  alignItems:'center',
-                  justifyContent:'center',
-                  width:'100%',
-                  marginTop:30
-                }}>
-                  <View style={{
-                    flexDirection:'column',
-                    justifyContent:'center',
-                    alignItems:'center',
-                    width:'100%'
-                  }}>
-                    <Text style={{
-                      textAlign:'center',
-                      fontWeight:'300',
-                      color:COLORS.WHITE
-                      }}>YOUR SCORE</Text>
-                    <Text style={{
-                      textAlign:'center',
-                      fontWeight:'bold',
-                      fontSize:40,
-                      color:COLORS.WHITE
-                    }}>
-                      {score} / 20</Text>
-                  </View>
-                  <Text style={{
-                      textAlign:'center',
-                      fontWeight:'600',
-                      color:COLORS.WHITE
-                      }}>-------------------------</Text>
-                  <View style={{
-                    flexDirection:'column',
-                    justifyContent:'center',
-                    alignItems:'center',
-                    width:'100%'
-                  }}>
-                    <Text style={{
-                      textAlign:'center',
-                      fontWeight:'300',
-                      color:COLORS.WHITE
-                      }}>HIGH SCORE</Text>
-                    <Text style={{
-                      textAlign:'center',
-                      fontWeight:'bold',
-                      fontSize:26,
-                      color:COLORS.WHITE
-                    }}>{LeaderboardList.length>0?LeaderboardList[0].score:''}</Text>
-                  </View>
-                </View>
-                <View style={{
-                  marginTop:30,
-                  justifyContent:'center',
-                  alignItems:'center',
-                  gap:10,
-                  width:'100%'
-                }}>
-                  <TouchableOpacity style={{
-                    backgroundColor:COLORS.WHITE,
-                    justifyContent:'center',
-                    alignItems:'center',
-                    width:'100%',
-                    height:50,
-                    borderRadius:8,
-                  }}
-                  onPress={handleLeaderboardClick}>
-                    <Text style={{
-                      textAlign:'center',
-                      color:COLORS.ACTIVE_BTN,
-                      textTransform:'uppercase',
-                      fontSize:16,
-                      fontWeight:'500',
-                    }}>Check Leaderboard</Text>
-                  </TouchableOpacity>
-                    <TouchableOpacity style={{
-                        backgroundColor:COLORS.WHITE,
-                        justifyContent:'center',
-                        alignItems:'center',
-                        width:'100%',
-                        height:50,
-                        borderRadius:8,
-                      }}>
-                        <Text style={{
-                          textAlign:'center',
-                          color:COLORS.ACTIVE_BTN,
-                          textTransform:'uppercase',
-                          fontSize:16,
-                          fontWeight:'500',
-                        }}>NEW QUIZ</Text>
-                      </TouchableOpacity>
-                      </View>*/}
               </View>
           }
         </View>
@@ -619,7 +525,7 @@ export default function Quiz() {
                 backgroundColor:COLORS.TERTIARY_COLOR,
                 flexDirection:'column',
                 width:'100%',
-                alignItems:'center',
+                alignItems:'flex-start',
                 borderRadius:15,
                 shadowColor: (IsDark)?'white':'#000',
                 shadowOffset: { width: 0, height: 4 },
@@ -630,8 +536,18 @@ export default function Quiz() {
                 paddingTop:20,
                 paddingHorizontal:12,
                 flex:1,
-                marginTop:MarginBtm
+                marginTop:MarginBtm,
+                justifyContent:'flex-start'
               }}>
+              <Text style={{
+                fontWeight:'300',
+                fontSize:12,
+                textAlign:'left',
+                textTransform:'uppercase',
+                color:COLORS.PRIMARY_COLOR
+              }}>
+                {currentQuestion!=-1&&questions.length!=0&&questions[currentQuestion].difficulty}
+              </Text>
               {renderQuestion()}
             
               <View style={{width:'100%',flex:1}}>
