@@ -1,11 +1,23 @@
 {
   "expo": {
+    "name":"quiz-app",
+    "version":"1.0.0",
+    "orientation":"potrait",
     "userInterfaceStyle": "automatic",
     "scheme": "acme",
     "web": {
       "bundler": "metro"
     },
-    "name": "quiz-app",
-    "slug": "quiz-app"
+    "android":{
+      "adaptiveIcon":{
+        "foregroundImage":"./assests/logo.png",
+        "backgroundColor":"#FFFFFF"
+      }
+    },
+    "splash":{
+      "image":"./assests/logo.png",
+      "resizeMode":"contain",
+      "backgroundColor":"#FFFFFF"
+    }
   }
 }

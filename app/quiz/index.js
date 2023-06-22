@@ -51,7 +51,7 @@ export default function Quiz() {
       //Get Difficulty
       const val = await AsyncStorage.getItem(DIFFICULTY_STORAGE_KEY)
       const index = parseInt(val)
-      const difficulty = ['','easy','medium','hard']
+      const difficulty = ['',   'easy','medium','hard']
       const uri =`https://opentdb.com/api.php?amount=5&category=9&type=multiple${(index)!=0?`&difficulty=${difficulty[index]}`:''}`
       const res = await fetch(uri);
       const data = await res.json();
@@ -196,15 +196,45 @@ export default function Quiz() {
   }
 
   const renderQuestion = ()=>{
-    return(
-      <Text style={{
-        color:COLORS.PRIMARY_COLOR,
-        fontWeight:'bold',
-        fontSize:22,
-        lineHeight:30,
-        marginBottom:40
-      }}>{currentQuestion!=-1&&questions.length!=0&&questions[currentQuestion].question}</Text>
-    )
+    if(currentQuestion!=-1&&questions.length!=0)
+    {
+      return(
+        <Text style={{
+          color:COLORS.PRIMARY_COLOR,
+          fontWeight:'bold',
+          fontSize:22,
+          lineHeight:30,
+          marginBottom:40
+        }}>{questions[currentQuestion].question}</Text>
+      )
+    }
+    else if(questions.length<=0){
+      return(
+        <View style={{
+          backgroundColor:(IsDark)?'#171717':'#e0e0e0',
+          height:100,
+          width:'100%'
+        }}>
+        </View>
+      )
+    }
+  }
+  const renderOptions = ()=>{
+
+    if(currentQuestion!=-1&&questions.length!=0)
+    {
+      return questions[currentQuestion].options.map((option,i)=>(
+        <Option key={i} optionText={option} optionIndex={i} OnClickListener={handleOptionClick} isSelected={SelectedOption===i} IsDark={IsDark}/>
+      ))
+    }
+    else if(questions.length<=0){
+      let optionArray = []
+      for(var i=0;i<4;i++){
+        optionArray.push(<Option key={i} IsLoading={true} IsDark={IsDark}/>)
+      }
+      return optionArray
+    }
+    
   }
   return (
     <SafeAreaView style={{  width:'100%',height:'100%',backgroundColor:(IsDark)?'#0F0F0F':'#FAFAFF'}}>
@@ -399,7 +429,7 @@ export default function Quiz() {
                       paddingBottom:40
                     }}>
                       <TouchableOpacity style={{
-                        backgroundColor:(SelectedOption!=-1)?COLORS.ACTIVE_BTN:COLORS.INACTIVE_BTN,
+                        backgroundColor:COLORS.ACTIVE_BTN,
                         width:'100%',
                         height:60,
                         borderRadius:8,
@@ -551,11 +581,7 @@ export default function Quiz() {
               {renderQuestion()}
             
               <View style={{width:'100%',flex:1}}>
-               {
-                currentQuestion!=-1&&questions.length!=0&&questions[currentQuestion].options.map((option,i)=>(
-                  <Option key={i} optionText={option} optionIndex={i} OnClickListener={handleOptionClick} isSelected={SelectedOption===i} IsDark={IsDark}/>
-                ))
-               }
+                {renderOptions()}
               </View>
               <View style={{
                     justifyContent:'center',

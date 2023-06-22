@@ -16,19 +16,19 @@ export default function App(){
     const COLORS = COLORS_SCHEME[(IsDark)?1:0]
     const [difficulty,setDifficulty] = useState(0);
     const router = useRouter();
-    async function getDifficulty(){
+    const getDifficulty = async ()=>{
         try{
             const val = await AsyncStorage(DIFFICULTY_STORAGE_KEY);
-            const Index = parseInt(val);
+            const Index = parseInt(val)
             setDifficulty(Index);
         }
         catch(e){
-            console.log("E",e);
-        }    
+            console.log(e)
+        }
+            
     }
-
     useEffect(()=>{
-            getDifficulty();
+            getDifficulty()
     },[])
     const styles = StyleSheet.create({
         container: {

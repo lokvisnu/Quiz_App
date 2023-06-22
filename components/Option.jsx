@@ -4,7 +4,7 @@ import {Text,View} from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { COLORS_SCHEME } from '../constants';
 import { Ionicons } from '@expo/vector-icons';
-export default function Options({optionText,OnClickListener,optionIndex,isSelected,IsDark}) {
+export default function Options({optionText,OnClickListener,optionIndex,isSelected,IsDark,IsLoading}) {
   const OptionsArray =['A','B','C','D']
   const COLORS = COLORS_SCHEME[IsDark?1:0] // Change
   const handleOptionClick = ()=>{
@@ -31,8 +31,10 @@ export default function Options({optionText,OnClickListener,optionIndex,isSelect
             alignItems:'center',
             justifyContent:'center',
             borderRadius:16,
-            width:32,
-            height:32,
+            width:30,
+            height:30,
+            maxHeight:30,
+            maxWidth:30,
             position:(isSelected)?undefined:'relative'
           }}>
         {!isSelected?
@@ -41,7 +43,7 @@ export default function Options({optionText,OnClickListener,optionIndex,isSelect
             fontWeight:500,
             color:(IsDark)?'#323232':COLORS.SECONDARY_COLOR,
             position:'absolute'
-          }}>{OptionsArray[optionIndex]}</Text>:
+          }}>{!IsLoading?OptionsArray[optionIndex]:' '}</Text>:
           <Ionicons name="checkmark-sharp" size={16} color={(IsDark)?'#323232':COLORS.PRIMARY_COLOR} />
         } 
         </View>
@@ -53,7 +55,7 @@ export default function Options({optionText,OnClickListener,optionIndex,isSelect
           fontWeight:400,
           textTransform:'uppercase',
           color:(IsDark)?COLORS.WHITE:(isSelected)?COLORS.WHITE:COLORS.SECONDARY_COLOR
-        }}>{optionText}</Text>
+        }}>{!IsLoading?optionText:'     '}</Text>
     </TouchableOpacity >
   )
 }
