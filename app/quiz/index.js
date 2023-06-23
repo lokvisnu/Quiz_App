@@ -8,9 +8,10 @@ import { ColorSpace, color } from 'react-native-reanimated'
 import { Entypo,Ionicons,Feather } from '@expo/vector-icons'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter,useNavigation,Link } from 'expo-router'
-
-
+import { Audio } from 'expo-av';
 export default function Quiz() {
+  //const SoundEffectArray =  [require('../../assets/right_answer.mp3'),require('../../assets/wrong_answer.mp3')]
+
   const [questions,setQuestions] = useState([]) // Array Of All Questions
   const [IsNewHighScore,setIsNewHighScore]  = useState(false)
   const [IsCompleted,setIsCompleted] =useState(false) // Once All Questions are Completed setIsCompletd(true) -> Loading Cong Box
@@ -24,11 +25,12 @@ export default function Quiz() {
   const [LeaderboardList,setLeaderboardList] = useState([]);
   const [Time,setTime] = useState(60);
   const [IsTimerPaused,setIsTimerPaused] = useState(false);
+  const [sound,setSound] = useState();
   const router = useRouter();
-  const navigation = useNavigation();
   const colorScheme = useColorScheme()
   const [IsDark,setIsDark] = useState(colorScheme!=='light') //change // change
   const COLORS = COLORS_SCHEME[(IsDark)?1:0]
+  const right_answer = require('../../assests/right_answer.mp3'), wrong_answer = require('../../assests/wrong_answer.mp3')
  // console.log(cS)
   // Fetch Question Array from API
   /*
@@ -89,7 +91,12 @@ export default function Quiz() {
       console.log(e)
     }
   }
-
+  const playSoundEffect = async (soundIndex)=>{
+    const SoundEffectArray = [right_answer,wrong_answer]
+    const {sound} = await Audio.Sound.createAsync(SoundEffectArray[soundIndex]);
+    setSound(sound);
+    await sound.playAsync();
+  }
   useEffect(()=>{
     FetchQuestion()
   },[])
@@ -137,6 +144,13 @@ export default function Quiz() {
     }
     return () => clearInterval(interval);
   },[questions])
+
+  useEffect(()=>{
+    return sound? () => {
+      sound.unloadAsync();
+    }
+  : undefined;
+  },[sound])
   const MarginBtm = 10;
   const handleOptionClick = (optionIndex)=>{
     setSelectedOption(optionIndex)
@@ -150,9 +164,13 @@ export default function Quiz() {
         // Score Update
         setScore((prev_score)=>prev_score+4)
         setCorrectPrediction((prev)=>prev+1)
+        playSoundEffect(0)
       } 
         else
+        {
           setScore(prev_score=>prev_score-1)
+          playSoundEffect(1)
+        }
 
       if(currentQuestion<4){
         setSelectedOption(-1)
@@ -185,9 +203,7 @@ export default function Quiz() {
       setIsNewHighScore(false);
     }
   }
-  const handleLeaderboardClick = ()=>{
-    router.push('/leaderboard')
-  }
+
 
   const handleTimerInterval = ()=>{
     if(!IsTimerPaused){
