@@ -12,7 +12,10 @@ export default function Options({optionText,OnClickListener,optionIndex,isSelect
   }
   return (
     <TouchableOpacity 
-    onPress={handleOptionClick}
+    onPress={()=>{
+      if(!IsLoading)
+      handleOptionClick()
+    }}
     style={{
       backgroundColor:(isSelected)?COLORS.ACTIVE_BTN:(IsDark)?'#171717':'#F4F3F6',
       width:'100%',
